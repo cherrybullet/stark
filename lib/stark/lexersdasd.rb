@@ -1,10 +1,6 @@
 module Stark
   class Lexer
 
-
-Lexer
-
-
     # attr_reader :tokens
     #
     # def initialize(source)
@@ -25,8 +21,6 @@ Lexer
 #     source
 #     def keywords?
 # tokenize
-# # break class construct else false for foreign if import
-# # in is null return static super this true var while
 #
 # # @keywords
 #     end

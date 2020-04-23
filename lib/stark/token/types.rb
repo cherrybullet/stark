@@ -1,10 +1,16 @@
 module Stark
   class Token
     module Types
-
-
-# break else false for   import
-# in is  return static
+# break import
+# in is static
+# "then", "unless",
+# "or", "is", "isnt", "not",
+# "new", "return",
+# "try", "catch", "finally", "throw",
+# "break", "continue",
+# "for", "in", "while",
+# "switch", "when",
+# "super", "extends",
 # keywords.put("and",    AND);
 # keywords.put("class",  CLASS);
 # keywords.put("else",   ELSE);
