@@ -1,10 +1,8 @@
 module Stark
   class Lexer
     def initialize
-      @lineno = 1
-      @tokens = []
-      @keywords = {
-
+      @line, @current = 1, 0
+      @tokens, @keywords = [], {
         # @start    = 0
         # @current  = 0
         # break import
@@ -33,7 +31,6 @@ module Stark
         # keywords.put("true",   TRUE);
         # keywords.put("var",    VAR);
         # keywords.put("while",  WHILE);
-
       }
     end
 
@@ -44,10 +41,10 @@ module Stark
     private
 
     def add_token(type, lexeme, literal)
-      @tokens << Token.new(type, lexeme, literal, @lineno)
+      @tokens << Token.new(type, lexeme, literal, @line)
     end
 
-    def next_token
+    def scan_token
     end
   end
 end
@@ -55,7 +52,7 @@ end
 # def Ripper.tokenize(src, filename = '-', lineno = 1)
 #   Lexer.new(src, filename, lineno).tokenize
 # private void addToken(TokenType type) {
-#   addToken(type, null);
+#   addToken(type, null);|
 # }
 #
 # private void addToken(TokenType type, Object literal) {

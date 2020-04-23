@@ -5,10 +5,10 @@ module Stark
     attr_reader :type
     attr_reader :lexeme
     attr_reader :literal
-    attr_reader :lineno
+    attr_reader :line
 
-    def initialize(type:, lexeme:, literal:, lineno:)
-      @type, @lexeme, @literal, @line = type, lexeme, literal, lineno
+    def initialize(type:, lexeme:, literal:, line:)
+      @type, @lexeme, @literal, @line = type, lexeme, literal, line
     end
 
     def to_s
