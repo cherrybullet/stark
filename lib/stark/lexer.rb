@@ -1,9 +1,12 @@
 module Stark
   class Lexer
     def initialize
+      @lineno = 1
       @tokens = []
       @keywords = {
 
+        # @start    = 0
+        # @current  = 0
         # break import
         # in is static
         # "then", "unless",
@@ -40,24 +43,17 @@ module Stark
 
     private
 
-    def method_name
+    def add_token(type, lexeme, literal)
+      @tokens << Token.new(type, lexeme, literal, @lineno)
+    end
+
+    def next_token
     end
   end
 end
 
-
-
-
-# def add_token(type, literal=nil)
-#   @tokens = Token.new(type: type, lexeme: lexeme, literal: literal, line: @line)
-# end
 # def Ripper.tokenize(src, filename = '-', lineno = 1)
 #   Lexer.new(src, filename, lineno).tokenize
-# end
-# Tokenizes the Ruby program and returns an array of strings.
-#
-#   p Ripper.tokenize("def m(a) nil end")
-#      # => ["def", " ", "m", "(", "a", ")", " ", "nil", " ", "end"]
 # private void addToken(TokenType type) {
 #   addToken(type, null);
 # }
