@@ -1,0 +1,15 @@
+
+class Start {
+  init(a, b) {
+  }
+
+  render() {
+    return "Stark!!!"
+  }
+
+}
+
+# ..
+# ...
+# .
+# ?.
