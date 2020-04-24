@@ -1,5 +1,4 @@
-module Stark
-  class Lexer
+
     def initialize
       @line, @current = 1, 0
       @tokens, @keywords = [], {
@@ -33,11 +32,6 @@ module Stark
         # keywords.put("while",  WHILE);
       }
     end
-
-    def tokenize(code)
-      @code = code.chomp
-    end
-
     private
 
     def add_token(type, lexeme, literal)

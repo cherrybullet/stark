@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require 'stark'
+require 'pathname'
+
+code = Pathname('../test/0.lox').read
+tokens = Stark::Lexer.new.tokenize(code)
