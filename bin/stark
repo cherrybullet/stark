@@ -3,5 +3,7 @@
 require 'stark'
 require 'pathname'
 
-code = Pathname('../test/0.lox').read
+code = Pathname('test/lexer/0.lox').read
 tokens = Stark::Lexer.new.tokenize(code)
+
+puts tokens.inspect
