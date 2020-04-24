@@ -1,10 +1,28 @@
 module Stark
   class Lexer
     def initialize
-      @tokens  = []
-      @start   = 0
-      @current = 0
-      @line    = 1
+      @tokens   = []
+      @start    = 0
+      @current  = 0
+      @line     = 1
+      @keywords = {
+        :and    => Token::AND,
+        :class  => Token::CLASS,
+        :else   => Token::ELSE,
+        :false  => Token::FALSE,
+        :for    => Token::FOR,
+        :fun    => Token::FUN,
+        :if     => Token::IF,
+        :nil    => Token::NIL,
+        :or     => Token::OR,
+        :print  => Token::PRINT,
+        :return => Token::RETURN,
+        :super  => Token::SUPER,
+        :this   => Token::THIS,
+        :true   => Token::TRUE,
+        :var    => Token::VAR,
+        :while  => Token::WHILE,
+      }
     end
 
     def tokenize(code)
@@ -57,6 +75,8 @@ module Stark
       else
         if digit?(char)
           number
+        elsif alpha?(char)
+          identifier
         else
           puts "Something goes wrong!!!"
         end
@@ -84,6 +104,14 @@ module Stark
     def peek_next
       return '\0' if @current + 1 >= @code.length
       @code[@current + 1]
+    end
+
+    def identifier
+      while alpha_numeric?(peek)
+        advance
+      end
+
+      add_token(@keywords[@code[@start...@current].to_sym] || Token::IDENTIFIER)
     end
 
     def string
@@ -126,8 +154,16 @@ module Stark
       @code[@current - 1]
     end
 
+    def alpha_numeric?(char)
+      alpha?(char) || digit?(char)
+    end
+
     def digit?(char)
       ('0'..'9').include?(char)
+    end
+
+    def alpha?(char)
+      ('a'..'z').include?(char) || ('A'..'Z').include?(char) || char == '_'
     end
 
     def at_end?
