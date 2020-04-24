@@ -53,8 +53,13 @@ module Stark
       when '\t'
       when %{\n}
         @line += 1
+      when '"' then string
       else
-        puts "Something goes wrong!!!"
+        if digit?(char)
+          number
+        else
+          puts "Something goes wrong!!!"
+        end
       end
     end
 
@@ -76,18 +81,57 @@ module Stark
       @code[@current]
     end
 
+    def peek_next
+      return '\0' if @current + 1 >= @code.length
+      @code[@current + 1]
+    end
+
+    def string
+      loop {
+        break if peek == '"'
+        break if at_end?
+
+        if peek == %{\n}
+          @line += 1
+        end
+
+        advance
+      }
+
+      if at_end?
+        puts "Something goes wrong!!!"
+      else
+        advance
+        add_token(Token::STRING, @code[(@start + 1)...(@current - 1)])
+      end
+    end
+
+    def number
+      while digit?(peek)
+        advance
+      end
+
+      if peek == '.' && digit?(peek_next)
+        advance
+        while digit?(peek)
+          advance
+        end
+      end
+
+      add_token(Token::NUMBER, @code[@start...@current].to_f)
+    end
+
     def advance
       @current += 1
       @code[@current - 1]
     end
 
+    def digit?(char)
+      ('0'..'9').include?(char)
+    end
+
     def at_end?
       @current >= @code.length
     end
-
-
-
-
-
   end
 end
