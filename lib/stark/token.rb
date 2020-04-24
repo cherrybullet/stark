@@ -12,7 +12,7 @@ module Stark
     end
 
     def to_s
-      "<#{@type}> #{lexeme}"
+      "<#{@type}> #{@literal}"
     end
   end
 end
