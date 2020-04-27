@@ -86,10 +86,12 @@ module Stark
         consume(Token::RIGHT_PAREN, 'Expect `)` after expression.')
         return Expr::Grouping.new(_expr)
       end
+
+      puts 'raise error(peek, message)'
     end
 
     def consume(type, message)
-      if check(type)
+      if check?(type)
         advance
       else
         puts 'raise error(peek, message)'
@@ -123,16 +125,16 @@ module Stark
 
     def match?(*types)
       types.each do |type|
-        if check(type)
+        if check?(type)
           advance
-          return false
+          return true
         end
       end
 
       return false
     end
 
-    def check(type)
+    def check?(type)
       return false if at_end?
       peek.type === type
     end
@@ -154,7 +156,7 @@ module Stark
     end
 
     def at_end?
-      peek.type === :EOF
+      peek.type === Token::EOF
     end
   end
 end
