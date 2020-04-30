@@ -67,8 +67,9 @@ module Stark
           add_token(Token::SLASH)
         end
       when ' '
-      when '\r'
-      when '\t'
+      when %{\r}
+      when %{\t}
+        'do nothing'
       when %{\n}
         @line += 1
       when '"' then string
@@ -97,12 +98,12 @@ module Stark
     end
 
     def peek
-      return '\0' if at_end?
+      return %{\0} if at_end?
       @code[@current]
     end
 
     def peek_next
-      return '\0' if @current + 1 >= @code.length
+      return %{\0} if @current + 1 >= @code.length
       @code[@current + 1]
     end
 

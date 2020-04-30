@@ -100,6 +100,8 @@ module Stark
     end
 
     def error(token, message)
+      # Stark.error(*args)
+      # ParseError.new
     end
 
     def synchronize
