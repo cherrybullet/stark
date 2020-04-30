@@ -10,12 +10,16 @@ module Stark
   module_function
 
   def run(code)
-    tokens = Stark::Lexer.new.tokenize(code)
+    tokens = Lexer.new.tokenize(code)
     tokens.map { |t| puts [t.type, t.lexeme, t.literal].inspect }
   end
 
   def run_file(path)
     run(Pathname(path).read)
+  end
+
+  def print_tree(code)
+    puts JSON.pretty_generate([AST::Printer.new.print(Parser.new(Lexer.new.tokenize(code)).parse)])
   end
 
   def mock_ast

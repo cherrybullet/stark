@@ -1,9 +1,11 @@
 #!/usr/bin/env ruby
 
 require 'stark'
+require 'json'
 require 'pathname'
 
 if ARGV.first
   Stark.run_file(ARGV.first)
 else
+  Stark.print_tree('1 + 23 - 4 - ( 1 * 2 )')
 end
