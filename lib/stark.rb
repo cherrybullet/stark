@@ -3,10 +3,20 @@ require 'stark/token/types'
 require 'stark/token'
 require 'stark/lexer'
 require 'stark/expr'
+require 'stark/interpreter'
 require 'stark/parser'
 require 'stark/version'
 
 module Stark
+  # static boolean hadError = false;
+  # static boolean hadRuntimeError = false;
+
+  class RuntimeError
+    def initialize(token, message)
+      @token, @message = token, message
+    end
+  end
+
   module_function
 
   def run(code)
@@ -20,6 +30,10 @@ module Stark
 
   def print_tree(code)
     puts JSON.pretty_generate([AST::Printer.new.print(Parser.new(Lexer.new.tokenize(code)).parse)])
+  end
+
+  def print_result(code)
+    puts Interpreter.new.interpret(Parser.new(Lexer.new.tokenize(code)).parse)
   end
 
   def mock_ast
