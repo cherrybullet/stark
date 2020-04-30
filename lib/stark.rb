@@ -1,3 +1,4 @@
+require 'stark/ast/printer'
 require 'stark/token/types'
 require 'stark/token'
 require 'stark/lexer'
