@@ -1,8 +1,10 @@
 module Stark
   module AST
     class Printer
-      def print(expr)
-        expr.accept(self)
+      def print(statements)
+        statements.map do |statement|
+          statement.accept(self)
+        end
       end
 
       def visitBinaryExpr(expr)
