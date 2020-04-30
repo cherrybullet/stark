@@ -1,7 +1,19 @@
 module Stark
   class Interpreter
-    def interpret(expression)
-      evaluate(expression)
+    def interpret(statements)
+      statements.each do |statement|
+        execute(statement)
+      end
+    end
+
+    def visitPrintStmt(stmt)
+      _value = evaluate(stmt.expression)
+      puts _value
+    end
+
+    def visitExpressionStmt(stmt)
+      evaluate(stmt.expression)
+      nil
     end
 
     def visitBinaryExpr(expr)
@@ -64,6 +76,10 @@ module Stark
     def equal?(a, b)
       return true if a.nil? and b.nil?
       return a.eql?(b)
+    end
+
+    def execute(stmt)
+      stmt.accept(self)
     end
 
     def evaluate(expr)

@@ -6,10 +6,37 @@ module Stark
     end
 
     def parse(options={})
-      expression
+      _statements = []
+
+      loop {
+        break if at_end?
+        _statements << statement
+      }
+
+      _statements
     end
 
     private
+
+    def statement
+      if match?(Token::PRINT)
+        print_statement
+      else
+        expression_statement
+      end
+    end
+
+    def print_statement
+      _value = expression
+      consume(Token::SEMICOLON, 'Expect `;` after value.')
+      Stmt::Print.new(_value)
+    end
+
+    def expression_statement
+      _expr = expression
+      consume(Token::SEMICOLON, 'Expect `;` after expression.')
+      Stmt::Expression.new(_expr)
+    end
 
     def expression
       equality
