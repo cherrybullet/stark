@@ -10,7 +10,7 @@ module Stark
 
       loop {
         break if at_end?
-        _statements << statement
+        _statements << declaration
       }
 
       _statements
@@ -18,12 +18,34 @@ module Stark
 
     private
 
+    def declaration
+      # synchronize?
+      if match?(Token::VAR)
+        var_declaration
+      else
+        statement
+      end
+    end
+
     def statement
       if match?(Token::PRINT)
         print_statement
       else
         expression_statement
       end
+    end
+
+    def var_declaration
+      _name = consume(Token::IDENTIFIER, 'Expect variable name.')
+      _initializer = nil
+
+      if match?(Token::EQUAL)
+        _initializer = expression
+      end
+
+      consume(Token::SEMICOLON, 'Expect `;` after variable declaration.')
+
+      Stmt::Var.new(name, _initializer)
     end
 
     def print_statement
@@ -107,6 +129,10 @@ module Stark
 
       if match?(Token::NUMBER, Token::STRING)
         return Expr::Literal.new(previous.literal)
+      end
+
+      if match?(Token::IDENTIFIER)
+        return Expr::Variable(previous)
       end
 
       if match?(Token::LEFT_PAREN)

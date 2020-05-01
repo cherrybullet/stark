@@ -1,9 +1,23 @@
 module Stark
   class Interpreter
+    def initialize
+      @environment = Environment.new
+    end
+
     def interpret(statements)
       statements.each do |statement|
         execute(statement)
       end
+    end
+
+    def visitVarStmt(stmt)
+      _value = nil
+      unless stmt.initializer.nil?
+        _value = evaluate(stmt.initializer)
+      end
+
+      @environment.define_var(stmt.name.lexeme, _value)
+      nil
     end
 
     def visitPrintStmt(stmt)
@@ -14,6 +28,10 @@ module Stark
     def visitExpressionStmt(stmt)
       evaluate(stmt.expression)
       nil
+    end
+
+    def visitVariableExpr(expr)
+      @environment.get_var(expr.name)
     end
 
     def visitBinaryExpr(expr)
