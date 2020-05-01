@@ -45,7 +45,7 @@ module Stark
 
       consume(Token::SEMICOLON, 'Expect `;` after variable declaration.')
 
-      Stmt::Var.new(name, _initializer)
+      Stmt::Var.new(_name, _initializer)
     end
 
     def print_statement
@@ -132,7 +132,7 @@ module Stark
       end
 
       if match?(Token::IDENTIFIER)
-        return Expr::Variable(previous)
+        return Expr::Variable.new(previous)
       end
 
       if match?(Token::LEFT_PAREN)
