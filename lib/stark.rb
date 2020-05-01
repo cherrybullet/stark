@@ -31,7 +31,7 @@ module Stark
   end
 
   def print_tree(code)
-    puts JSON.pretty_generate([AST::Printer.new.print(Parser.new(Lexer.new.tokenize(code)).parse)])
+    puts JSON.pretty_generate(AST::Printer.new.print(Parser.new(Lexer.new.tokenize(code)).parse))
   end
 
   def print_result(code)

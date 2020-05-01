@@ -7,5 +7,5 @@ require 'pathname'
 if ARGV.first
   Stark.run_file(ARGV.first)
 else
-  Stark.print_tree('1 + 23 - 4 - ( 1 * 2 )')
+  Stark.print_tree('var a = 1; print a;')
 end

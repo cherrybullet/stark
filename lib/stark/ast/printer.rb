@@ -7,6 +7,43 @@ module Stark
         end
       end
 
+      def visitVarStmt(stmt)
+        {
+          name: 'VarStmt',
+          contents: [
+            { name: stmt.name.lexeme },
+            stmt.initializer.nil? ? { name: 'nil' } : stmt.initializer.accept(self)
+          ]
+        }
+      end
+
+      def visitPrintStmt(stmt)
+        {
+          name: 'PrintStmt',
+          contents: [
+            stmt.expression.accept(self),
+          ]
+        }
+      end
+
+      def visitExpressionStmt(stmt)
+        {
+          name: 'ExpressionStmt',
+          contents: [
+            stmt.expression.accept(self),
+          ]
+        }
+      end
+
+      def visitVariableExpr(expr)
+        {
+          name: 'VariableExpr',
+          contents: [
+            { name: expr.name.lexeme }
+          ]
+        }
+      end
+
       def visitBinaryExpr(expr)
         {
           name: 'BinaryExpr',
