@@ -34,6 +34,17 @@ module Stark
       @environment.get_var(expr.name)
     end
 
+    def visitAssignExpr(expr)
+      _value = evaluate(expr.value)
+      @environment.assign(expr.name, _value)
+      _value
+    end
+
+    def visitBlockStmt(stmt)
+      executeBlock(stmt.statements, Environment.new(@environment))
+      nil
+    end
+
     def visitBinaryExpr(expr)
       _left = evaluate(expr.left)
       _right = evaluate(expr.right)
@@ -83,6 +94,17 @@ module Stark
 
     def checkNumberOperand(operator, operand)
       # Operand must be a number.
+    end
+
+    def executeBlock(statements, environment)
+      _previous = @environment
+      @environment = environment
+
+      statements.each do |statement|
+        execute(statement)
+      end
+
+      @environment = _previous
     end
 
     def truthy?(object)

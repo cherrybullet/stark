@@ -8,6 +8,15 @@ module Stark
       @values[name] = value
     end
 
+    def assign(name, value)
+      if @values.has_key?(name.lexeme)
+        @values[name.lexeme] = value
+        return true
+      end
+
+      puts "Undefined variable `#{name.lexeme}`."
+    end
+
     def get_var(name)
       if @values.has_key?(name.lexeme)
         @values[name.lexeme]

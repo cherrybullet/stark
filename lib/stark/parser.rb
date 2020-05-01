@@ -35,6 +35,20 @@ module Stark
       end
     end
 
+    def block
+      _statements = []
+
+      loop {
+        break if check?(Token::RIGHT_BRACE)
+        break if at_end?
+        _statements << declaration
+      }
+
+      consume(Token::RIGHT_BRACE, 'Expect `}` after block.')
+
+      _statements
+    end
+
     def var_declaration
       _name = consume(Token::IDENTIFIER, 'Expect variable name.')
       _initializer = nil
@@ -61,7 +75,25 @@ module Stark
     end
 
     def expression
-      equality
+      assignment
+    end
+
+    def assignment
+      _expr = equality
+
+      if match?(Token::EQUAL)
+        _equals = previous
+        _value = assignment
+
+        if _expr.is_a?(Expr::Variable)
+          _name = _expr.name
+          return Expr::Assign.new(_name, _value)
+        end
+
+        puts "#{_equals.inspect} Invalid assignment target."
+      end
+
+      _expr
     end
 
     def equality
