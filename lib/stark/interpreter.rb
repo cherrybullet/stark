@@ -45,6 +45,16 @@ module Stark
       nil
     end
 
+    def visitIfStmt(stmt)
+      if truthy?(evaluate(stmt.condition))
+        execute(stmt.then_branch)
+      elsif stmt.else_branch
+        execute(stmt.else_branch)
+      else
+      end
+      nil
+    end
+
     def visitBinaryExpr(expr)
       _left = evaluate(expr.left)
       _right = evaluate(expr.right)

@@ -28,6 +28,10 @@ module Stark
     end
 
     def statement
+      if match?(Token::IF)
+        return if_statement
+      end
+
       if match?(Token::PRINT)
         print_statement
       elsif match?(Token::LEFT_BRACE)
@@ -35,6 +39,21 @@ module Stark
       else
         expression_statement
       end
+    end
+
+    def if_statement
+      consume(Token::LEFT_PAREN, 'Expect `(` after `if`.')
+      _condition = expression
+
+      consume(Token::RIGHT_PAREN, 'Expect `)` after if condition.')
+      _then_branch = statement
+      _else_branch = nil
+
+      if match?(Token::ELSE)
+        _else_branch = statement
+      end
+
+      Stmt::If.new(_condition, _then_branch, _else_branch)
     end
 
     def block

@@ -13,6 +13,32 @@ module Stark
       end
     end
 
+    class Block
+      attr_reader :statements
+
+      def initialize(statements)
+        @statements = statements
+      end
+
+      def accept(visitor)
+        visitor.visitBlockStmt(self)
+      end
+    end
+
+    class If
+      attr_reader :condition
+      attr_reader :then_branch
+      attr_reader :else_branch
+
+      def initialize(condition, then_branch, else_branch)
+        @condition, @then_branch, @else_branch = condition, then_branch, else_branch
+      end
+
+      def accept(visitor)
+        visitor.visitIfStmt(self)
+      end
+    end
+
     class Print
       attr_reader :expression
 
