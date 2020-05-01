@@ -30,6 +30,8 @@ module Stark
     def statement
       if match?(Token::PRINT)
         print_statement
+      elsif match?(Token::LEFT_BRACE)
+        Stmt::Block.new(block)
       else
         expression_statement
       end
