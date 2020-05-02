@@ -20,6 +20,9 @@ module Stark
 
     def declaration
       # synchronize?
+      if match?(Token::FUN)
+        return function('function')
+      end
       if match?(Token::VAR)
         var_declaration
       else
@@ -144,6 +147,22 @@ module Stark
       consume(Token::SEMICOLON, 'Expect `;` after value.')
       Stmt::Print.new(_value)
     end
+
+
+
+    # private Stmt returnStatement() {
+    #   Token keyword = previous();
+    #   Expr value = null;
+    #   if (!check(SEMICOLON)) {
+    #     value = expression();
+    #   }
+    #
+    #   consume(SEMICOLON, "Expect ';' after return value.");
+    #   return new Stmt.Return(keyword, value);
+    # }
+    # lox/Parser.java, add after printStatement()
+
+
 
     def expression_statement
       _expr = expression
@@ -302,6 +321,25 @@ module Stark
       end
       _paren = consume(Token::RIGHT_PAREN, 'Expect `)` after arguments.')
       Expr::Call.new(callee, _paren, _arguments)
+    end
+
+    def function(kind)
+      _name = consume(Token::IDENTIFIER, 'Expect kind name.')
+      consume(Token::LEFT_PAREN, 'Expect `(` after kind name.')
+      _parameters = []
+      unless check?(Token::RIGHT_PAREN)
+        loop {
+          if _parameters.size >= 127
+            puts 'peek: Cannot have more than 127 parameters.'
+          end
+          _parameters << (consume(Token::IDENTIFIER, 'Expect parameter name.'))
+          break unless match?(Token::COMMA)
+        }
+      end
+      consume(Token::RIGHT_PAREN, 'Expect `)` after parameters.')
+      consume(Token::LEFT_BRACE, 'Expect `{` before kind body.')
+      _body = block
+      Stmt::Function.new(_name, _parameters, _body)
     end
 
     def consume(type, message)

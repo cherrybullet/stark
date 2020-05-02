@@ -1,7 +1,19 @@
 module Stark
   class Interpreter
     def initialize
-      @environment = Environment.new
+      @globals = Environment.new
+      @environment = @globals
+
+      # globals.define("clock", new LoxCallable() {
+      #   public int arity() { return 0; }
+      #
+      #   public Object call(Interpreter interpreter,
+      #                      List<Object> arguments) {
+      #     return (double)System.currentTimeMillis() / 1000.0;
+      #   }
+      #
+      #   public String toString() { return "<native fn>"; }
+      # })
     end
 
     def interpret(statements)
@@ -23,6 +35,19 @@ module Stark
     def visitPrintStmt(stmt)
       _value = evaluate(stmt.expression)
       puts _value
+    end
+
+    def visitReturnStmt(stmt)
+      #     Object value = null;
+      #     if (stmt.value != null) value = evaluate(stmt.value);
+      #
+      #     throw new Return(value);
+    end
+
+    def visitFunctionStmt(stmt)
+      # LoxFunction function = new LoxFunction(stmt);
+      # environment.define(stmt.name.lexeme, function);
+      # return null;
     end
 
     def visitExpressionStmt(stmt)
@@ -65,10 +90,19 @@ module Stark
     def visitCallExpr(expr)
       _callee = evaluate(expr.callee)
       _arguments = []
+
       expr.arguments.each do |argument|
         _arguments << evaluate(argument)
       end
+
+      unless _callee.is_a?(Callable)
+        puts '<expr.paren> Can only call functions and classes.'
+      end
+
       _function = _callee
+      unless _arguments.size === function.arity
+        puts '<expr.paren> Expected function.arity() arguments but got arguments.size().'
+      end
       _function.call(self, _arguments)
     end
 
