@@ -28,6 +28,10 @@ module Stark
     end
 
     def statement
+      if match?(Token::FOR)
+        return for_statement
+      end
+
       if match?(Token::IF)
         return if_statement
       end
@@ -71,14 +75,41 @@ module Stark
     def for_statement
       consume(Token::LEFT_PAREN, 'Expect `(` after `for`.')
 
-      #   Stmt initializer;
-      #   if (match(SEMICOLON)) {
-      #     initializer = null;
-      #   } else if (match(VAR)) {
-      #     initializer = varDeclaration();
-      #   } else {
-      #     initializer = expressionStatement();
-      #   }
+      if match?(Token::SEMICOLON)
+        _initializer = nil
+      elsif match?(Token::VAR)
+        _initializer = var_declaration
+      else
+        _initializer = expression_statement
+      end
+
+      _condition = nil
+      unless check?(Token::SEMICOLON)
+        _condition = expression
+      end
+      consume(Token::SEMICOLON, 'Expect `;` after loop condition.')
+
+      _increment = nil
+      unless check?(Token::RIGHT_PAREN)
+        _increment = expression
+      end
+      consume(Token::RIGHT_PAREN, 'Expect `)` after for clauses.')
+
+      _body = statement
+      if _increment
+        _body = Stmt::Block.new([_body, Stmt::Expression.new(_increment)])
+      end
+
+      if _condition.nil?
+        _condition = Expr::Literal.new(true)
+      end
+      _body = Stmt::While.new(_condition, _body)
+
+      if _initializer
+        _body = Stmt::Block.new([_initializer, _body])
+      end
+
+      _body
     end
 
     def block
