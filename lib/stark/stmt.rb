@@ -39,6 +39,19 @@ module Stark
       end
     end
 
+    class While
+      attr_reader :condition
+      attr_reader :body
+
+      def initialize(condition, body)
+        @condition, @body = condition, body
+      end
+
+      def accept(visitor)
+        visitor.visitWhileStmt(self)
+      end
+    end
+
     class Print
       attr_reader :expression
 
