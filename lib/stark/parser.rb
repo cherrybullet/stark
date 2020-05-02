@@ -227,8 +227,20 @@ module Stark
         _right = unary
         Expr::Unary.new(_operator, _right)
       else
-        primary
+        call
       end
+    end
+
+    def call
+      _expr = primary
+      loop {
+        if match?(Token::LEFT_PAREN)
+          _expr = finish_call(_expr)
+        else
+          break
+        end
+      }
+      _expr
     end
 
     def primary
@@ -275,6 +287,21 @@ module Stark
       end
 
       _expr
+    end
+
+    def finish_call(callee)
+      _arguments = []
+      unless check?(Token::RIGHT_PAREN)
+        loop {
+          if _arguments.size >= 127
+            puts 'peek() -> Cannot have more than 127 arguments.'
+          end
+          _arguments << expression
+          break unless match?(Token::COMMA)
+        }
+      end
+      _paren = consume(Token::RIGHT_PAREN, 'Expect `)` after arguments.')
+      Expr::Call.new(callee, _paren, _arguments)
     end
 
     def consume(type, message)

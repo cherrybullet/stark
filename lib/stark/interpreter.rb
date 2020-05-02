@@ -62,6 +62,16 @@ module Stark
       nil
     end
 
+    def visitCallExpr(expr)
+      _callee = evaluate(expr.callee)
+      _arguments = []
+      expr.arguments.each do |argument|
+        _arguments << evaluate(argument)
+      end
+      _function = _callee
+      _function.call(self, _arguments)
+    end
+
     def visitLogicalExpr(expr)
       _left = evaluate(expr.left)
 
