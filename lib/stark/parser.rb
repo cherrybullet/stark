@@ -34,6 +34,8 @@ module Stark
 
       if match?(Token::PRINT)
         print_statement
+      elsif match?(Token::WHILE)
+        while_statement
       elsif match?(Token::LEFT_BRACE)
         Stmt::Block.new(block)
       else
@@ -54,6 +56,29 @@ module Stark
       end
 
       Stmt::If.new(_condition, _then_branch, _else_branch)
+    end
+
+    def while_statement
+      consume(Token::LEFT_PAREN, 'Expect `(` after `while`.')
+      _condition = expression
+
+      consume(Token::RIGHT_PAREN, 'Expect `)` after condition.')
+      _body = statement
+
+      Stmt::While.new(_condition, _body)
+    end
+
+    def for_statement
+      consume(Token::LEFT_PAREN, 'Expect `(` after `for`.')
+
+      #   Stmt initializer;
+      #   if (match(SEMICOLON)) {
+      #     initializer = null;
+      #   } else if (match(VAR)) {
+      #     initializer = varDeclaration();
+      #   } else {
+      #     initializer = expressionStatement();
+      #   }
     end
 
     def block
@@ -100,7 +125,7 @@ module Stark
     end
 
     def assignment
-      _expr = equality
+      _expr = or_expr
 
       if match?(Token::EQUAL)
         _equals = previous
@@ -170,9 +195,9 @@ module Stark
         _operator = previous
         _right = unary
         Expr::Unary.new(_operator, _right)
+      else
+        primary
       end
-
-      primary
     end
 
     def primary
@@ -195,6 +220,30 @@ module Stark
       end
 
       puts 'raise error(peek, message)'
+    end
+
+    def and_expr
+      _expr = equality
+
+      while match?(Token::AND)
+        _operator = previous
+        _right = equality
+        _expr = Expr::Logical.new(_expr, _operator, _right)
+      end
+
+      _expr
+    end
+
+    def or_expr
+      _expr = and_expr
+
+      while match?(Token::OR)
+        _operator = previous
+        _right = and_expr
+        _expr = Expr::Logical.new(_expr, _operator, _right)
+      end
+
+      _expr
     end
 
     def consume(type, message)

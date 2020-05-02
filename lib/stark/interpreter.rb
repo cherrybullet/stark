@@ -55,6 +55,29 @@ module Stark
       nil
     end
 
+    def visitWhileStmt(stmt)
+      while truthy?(evaluate(stmt.condition))
+        execute(stmt.body)
+      end
+      nil
+    end
+
+    def visitLogicalExpr(expr)
+      _left = evaluate(expr.left)
+
+      if expr.operator.type === Token::OR
+        if truthy?(_left)
+          return _left
+        end
+      else
+        unless truthy?(_left)
+          return _left
+        end
+      end
+
+      evaluate(expr.right)
+    end
+
     def visitBinaryExpr(expr)
       _left = evaluate(expr.left)
       _right = evaluate(expr.right)
