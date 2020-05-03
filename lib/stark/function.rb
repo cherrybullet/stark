@@ -17,7 +17,7 @@ module Stark
     def call(interpreter, arguments)
       _environment = Environment.new(interpreter.globals)
       @declaration.params.each.with_index do |_declaration, index|
-        _environment.define(_declaration.lexeme, arguments[index])
+        _environment.define_var(_declaration.lexeme, arguments[index])
       end
       # catch Return returnValue -> returnValue.value
       interpreter.executeBlock(@declaration.body, _environment)

@@ -64,6 +64,33 @@ module Stark
       end
     end
 
+    class Function
+      attr_reader :name
+      attr_reader :params
+      attr_reader :body
+
+      def initialize(name, params, body)
+        @name, @params, @body = name, params, body
+      end
+
+      def accept(visitor)
+        visitor.visitFunctionStmt(self)
+      end
+    end
+
+    class Return
+      attr_reader :keyword
+      attr_reader :value
+
+      def initialize(keyword, value)
+        @keyword, @value = keyword, value
+      end
+
+      def accept(visitor)
+        visitor.visitReturnStmt(self)
+      end
+    end
+
     class Expression
       attr_reader :expression
 

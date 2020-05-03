@@ -1,5 +1,8 @@
 module Stark
   class Interpreter
+    attr_reader :globals
+    attr_reader :environment
+
     def initialize
       @globals = Environment.new
       @environment = @globals
@@ -48,7 +51,7 @@ module Stark
 
     def visitFunctionStmt(stmt)
       _function = Function.new(stmt)
-      @environment.define(stmt.name.lexeme, _function)
+      @environment.define_var(stmt.name.lexeme, _function)
       nil
     end
 
@@ -93,16 +96,16 @@ module Stark
       _callee = evaluate(expr.callee)
       _arguments = []
 
-      expr.arguments.each do |argument|
+      expr.args.each do |argument|
         _arguments << evaluate(argument)
       end
 
-      unless _callee.is_a?(Callable)
+      unless _callee.is_a?(Function)
         puts '<expr.paren> Can only call functions and classes.'
       end
 
       _function = _callee
-      unless _arguments.size === function.arity
+      unless _arguments.size === _function.arity
         puts '<expr.paren> Expected function.arity() arguments but got arguments.size().'
       end
       _function.call(self, _arguments)
