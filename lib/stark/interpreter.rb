@@ -47,6 +47,7 @@ module Stark
       else
         puts 'throw Return.new(value)'
       end
+      raise ReturnSkip.new(_value)
     end
 
     def visitFunctionStmt(stmt)
@@ -180,13 +181,14 @@ module Stark
 
     def executeBlock(statements, environment)
       _previous = @environment
-      @environment = environment
-
-      statements.each do |statement|
-        execute(statement)
+      begin
+        @environment = environment
+        statements.each do |statement|
+          execute(statement)
+        end
+      ensure
+        @environment = _previous
       end
-
-      @environment = _previous
     end
 
     def truthy?(object)
