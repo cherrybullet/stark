@@ -38,16 +38,18 @@ module Stark
     end
 
     def visitReturnStmt(stmt)
-      #     Object value = null;
-      #     if (stmt.value != null) value = evaluate(stmt.value);
-      #
-      #     throw new Return(value);
+      _value = nil
+      if stmt.value
+        _value = evaluate(stmt.value)
+      else
+        puts 'throw Return.new(value)'
+      end
     end
 
     def visitFunctionStmt(stmt)
-      # LoxFunction function = new LoxFunction(stmt);
-      # environment.define(stmt.name.lexeme, function);
-      # return null;
+      _function = Function.new(stmt)
+      @environment.define(stmt.name.lexeme, _function)
+      nil
     end
 
     def visitExpressionStmt(stmt)

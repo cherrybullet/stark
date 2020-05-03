@@ -41,6 +41,8 @@ module Stark
 
       if match?(Token::PRINT)
         print_statement
+      elsif match?(Token::RETURN)
+        return_statement
       elsif match?(Token::WHILE)
         while_statement
       elsif match?(Token::LEFT_BRACE)
@@ -148,21 +150,15 @@ module Stark
       Stmt::Print.new(_value)
     end
 
-
-
-    # private Stmt returnStatement() {
-    #   Token keyword = previous();
-    #   Expr value = null;
-    #   if (!check(SEMICOLON)) {
-    #     value = expression();
-    #   }
-    #
-    #   consume(SEMICOLON, "Expect ';' after return value.");
-    #   return new Stmt.Return(keyword, value);
-    # }
-    # lox/Parser.java, add after printStatement()
-
-
+    def return_statement
+      _keyword = previous
+      _value = nil
+      unless check?(Token::SEMICOLON)
+        _value = expression
+      end
+      consume(Token::SEMICOLON, 'Expect `;` after return value.')
+      Stmt::Return.new(_keyword, _value)
+    end
 
     def expression_statement
       _expr = expression
