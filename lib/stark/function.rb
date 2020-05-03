@@ -1,9 +1,10 @@
 module Stark
   class Function
+    attr_reader :closure
     attr_reader :declaration
 
-    def initialize(declaration)
-      @declaration = declaration
+    def initialize(declaration, closure)
+      @declaration, @closure = declaration, closure
     end
 
     def arity
@@ -15,7 +16,8 @@ module Stark
     end
 
     def call(interpreter, arguments)
-      _environment = Environment.new(interpreter.globals)
+      # interpreter.globals what?
+      _environment = Environment.new(@closure)
       @declaration.params.each.with_index do |_declaration, index|
         _environment.define_var(_declaration.lexeme, arguments[index])
       end

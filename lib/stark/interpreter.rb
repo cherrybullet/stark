@@ -51,7 +51,7 @@ module Stark
     end
 
     def visitFunctionStmt(stmt)
-      _function = Function.new(stmt)
+      _function = Function.new(stmt, @environment)
       @environment.define_var(stmt.name.lexeme, _function)
       nil
     end
