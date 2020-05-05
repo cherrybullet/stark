@@ -7,6 +7,7 @@ module Stark
       @globals = Environment.new
       @environment = @globals
 
+      # private final Map<Expr, Integer> locals = new HashMap<>();
       # globals.define("clock", new LoxCallable() {
       #   public int arity() { return 0; }
       #
@@ -63,13 +64,43 @@ module Stark
 
     def visitVariableExpr(expr)
       @environment.get_var(expr.name)
+
+      #     return lookUpVariable(expr.name, expr);
     end
+
+
+    # private Object lookUpVariable(Token name, Expr expr) {
+    #     Integer distance = locals.get(expr);
+    #     if (distance != null) {
+    #       return environment.getAt(distance, name.lexeme);
+    #     } else {
+    #       return globals.get(name);
+    #     }
+    #   }
+    # lox/Interpreter.java, add after visitVariableExpr()
+
+
+
 
     def visitAssignExpr(expr)
       _value = evaluate(expr.value)
       @environment.assign(expr.name, _value)
       _value
     end
+
+    # Object value = evaluate(expr.value);
+    #
+    #     Integer distance = locals.get(expr);
+    #     if (distance != null) {
+    #       environment.assignAt(distance, expr.name, value);
+    #     } else {
+    #       globals.assign(expr.name, value);
+    #     }
+    #
+    #     return value;
+    # lox/Interpreter.java, in visitAssignExpr(), replace 1 line
+
+
 
     def visitBlockStmt(stmt)
       executeBlock(stmt.statements, Environment.new(@environment))
@@ -204,6 +235,10 @@ module Stark
 
     def execute(stmt)
       stmt.accept(self)
+    end
+
+    def resolve(expr, depth)
+      # locals.put(expr, depth);
     end
 
     def evaluate(expr)

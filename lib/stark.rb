@@ -37,6 +37,9 @@ module Stark
   end
 
   def print_result(code)
+    # Resolver resolver = new Resolver(interpreter);
+    # resolver.resolve(statements);
+    # interpreter.interpret(statements);
     puts Interpreter.new.interpret(Parser.new(Lexer.new.tokenize(code)).parse)
   end
 

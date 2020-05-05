@@ -9,6 +9,23 @@ module Stark
       @values[name] = value
     end
 
+    def get_at(distance, name)
+      ancestor(distance).values[name]
+    end
+
+    def assign_at(distance, name, value)
+      ancestor(distance).values[name.lexeme] = value
+    end
+
+    def ancestor(distance)
+      #     Environment environment = this;
+      #     for (int i = 0; i < distance; i++) {
+      #       environment = environment.enclosing;
+      #     }
+      #
+      #     return environment;
+    end
+
     def assign(name, value)
       if @values.has_key?(name.lexeme)
         @values[name.lexeme] = value
