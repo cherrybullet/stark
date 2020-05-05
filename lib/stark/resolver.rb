@@ -135,7 +135,7 @@ module Stark
     end
 
     def resolve_local(expr, name)
-      _size = @scope.size
+      _size = @scopes.size
       (_size - 1).downto(0).to_a.each do |i|
         if @scopes[i].has_key?(name.lexeme)
           @interpreter.resolve(expr, @scopes.size - 1 - i)

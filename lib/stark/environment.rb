@@ -1,5 +1,8 @@
 module Stark
   class Environment
+    attr_reader :values
+    attr_reader :enclosing
+
     def initialize(enclosing=nil)
       @values = {}
       @enclosing = enclosing
