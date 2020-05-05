@@ -1,13 +1,14 @@
 module Stark
   class Interpreter
+    attr_reader :locals
     attr_reader :globals
     attr_reader :environment
 
     def initialize
+      @locals = {}
       @globals = Environment.new
       @environment = @globals
 
-      # private final Map<Expr, Integer> locals = new HashMap<>();
       # globals.define("clock", new LoxCallable() {
       #   public int arity() { return 0; }
       #
@@ -63,44 +64,28 @@ module Stark
     end
 
     def visitVariableExpr(expr)
-      @environment.get_var(expr.name)
-
-      #     return lookUpVariable(expr.name, expr);
+      lookUpVariable(expr.name, expr)
     end
 
-
-    # private Object lookUpVariable(Token name, Expr expr) {
-    #     Integer distance = locals.get(expr);
-    #     if (distance != null) {
-    #       return environment.getAt(distance, name.lexeme);
-    #     } else {
-    #       return globals.get(name);
-    #     }
-    #   }
-    # lox/Interpreter.java, add after visitVariableExpr()
-
-
-
+    def lookUpVariable(name, expr)
+      _distance = @locals[expr]
+      if _distance
+        @environment.get_at(_distance, name.lexeme)
+      else
+        @globals.get_var(name)
+      end
+    end
 
     def visitAssignExpr(expr)
       _value = evaluate(expr.value)
-      @environment.assign(expr.name, _value)
+      _distance = @locals[expr]
+      if _distance
+        @environment.assign_at(_distance, expr.name, _value)
+      else
+        @globals.assign(expr.name, _value)
+      end
       _value
     end
-
-    # Object value = evaluate(expr.value);
-    #
-    #     Integer distance = locals.get(expr);
-    #     if (distance != null) {
-    #       environment.assignAt(distance, expr.name, value);
-    #     } else {
-    #       globals.assign(expr.name, value);
-    #     }
-    #
-    #     return value;
-    # lox/Interpreter.java, in visitAssignExpr(), replace 1 line
-
-
 
     def visitBlockStmt(stmt)
       executeBlock(stmt.statements, Environment.new(@environment))
@@ -238,7 +223,7 @@ module Stark
     end
 
     def resolve(expr, depth)
-      # locals.put(expr, depth);
+      @locals[expr] = depth
     end
 
     def evaluate(expr)

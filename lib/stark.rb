@@ -6,14 +6,15 @@ require 'stark/expr'
 require 'stark/stmt'
 require 'stark/return'
 require 'stark/function'
+require 'stark/resolver'
 require 'stark/environment'
 require 'stark/interpreter'
 require 'stark/parser'
 require 'stark/version'
 
 module Stark
-  # static boolean hadError = false;
-  # static boolean hadRuntimeError = false;
+  @@_had_error = false
+  @@_had_runtime_error = false
 
   class RuntimeError
     def initialize(token, message)
@@ -37,10 +38,12 @@ module Stark
   end
 
   def print_result(code)
-    # Resolver resolver = new Resolver(interpreter);
-    # resolver.resolve(statements);
-    # interpreter.interpret(statements);
-    puts Interpreter.new.interpret(Parser.new(Lexer.new.tokenize(code)).parse)
+    tokens = Lexer.new.tokenize(code)
+    statements = Parser.new(tokens).parse
+    interpreter = Interpreter.new
+    resolver = Resolver.new(interpreter)
+    resolver.resolve(statements)
+    puts interpreter.interpret(statements)
   end
 
   def mock_ast

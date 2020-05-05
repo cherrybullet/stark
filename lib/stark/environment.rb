@@ -18,12 +18,9 @@ module Stark
     end
 
     def ancestor(distance)
-      #     Environment environment = this;
-      #     for (int i = 0; i < distance; i++) {
-      #       environment = environment.enclosing;
-      #     }
-      #
-      #     return environment;
+      _environment = self
+      (0...distance).each { _environment = _environment.enclosing }
+      _environment
     end
 
     def assign(name, value)

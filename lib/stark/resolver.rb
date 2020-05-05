@@ -1,24 +1,19 @@
 module Stark
   class Resolver
+    module FunctionType
+      FUNCTION = 1
+      NONE = 0
+    end
+
     attr_reader :scopes
     attr_reader :interpreter
+    attr_reader :current_function
 
     def initialize(interpreter)
+      @current_function = FunctionType::NONE
       @interpreter = interpreter
       @scopes = []
     end
-
-    # private final Stack<Map<String, Boolean>> scopes = new Stack<>();
-    #   +private FunctionType currentFunction = FunctionType.NONE;
-    #
-    #   Resolver(Interpreter interpreter) {
-    # lox/Resolver.java, in class Resolver
-
-    # private enum FunctionType {
-    #     NONE,
-    #     FUNCTION
-    #   }
-    # lox/Resolver.java, add after Resolver()
 
     def visitBlockStmt(stmt)
       begin_scope
@@ -65,20 +60,15 @@ module Stark
     end
 
     def visitReturnStmt(stmt)
+      if @current_function === FunctionType::NONE
+        puts "<#{stmt.keyword}> Cannot return from top-level code."
+      end
+
       if stmt.value
         resolve_expr(stmt.value)
       end
       nil
     end
-
-
-    # public Void visitReturnStmt(Stmt.Return stmt) {
-    #     if (currentFunction == FunctionType.NONE) {
-    #       Lox.error(stmt.keyword, "Cannot return from top-level code.");
-    #     }
-    #
-    #     if (stmt.value != null) {
-    # lox/Resolver.java, in visitReturnStmt()
 
     def visitExpressionStmt(stmt)
       resolve_expr(stmt.expression)
@@ -88,25 +78,16 @@ module Stark
     def visitFunctionStmt(stmt)
       declare(stmt.name)
       define(stmt.name)
-      resolve_function(stmt)
+      resolve_function(stmt, FunctionType::FUNCTION)
       nil
     end
 
-    # define(stmt.name);
-    #     +resolveFunction(stmt, FunctionType.FUNCTION);
-    #     return null;
-    # lox/Resolver.java, in visitFunctionStmt(), replace 1 line
-
-
     def visitVariableExpr(expr)
-      # if (!scopes.isEmpty() &&
-      #     scopes.peek().get(expr.name.lexeme) == Boolean.FALSE) {
-      #   Lox.error(expr.name,
-      #       "Cannot read local variable in its own initializer.");
-      # }
-      #
-      # resolveLocal(expr, expr.name);
-      # return null;
+      if (@scopes[0] && (@scopes.first[expr.name.lexeme] == false))
+        puts "<#{expr.name}> Cannot read local variable in its own initializer."
+      end
+      resolve_local(expr, expr.name)
+      nil
     end
 
     def visitAssignExpr(expr)
@@ -140,44 +121,30 @@ module Stark
     def visitLiteralExpr(expr)
     end
 
-    def resolve_function(function)
-      #   beginScope();
-      #   for (Token param : function.params) {
-      #     declare(param);
-      #     define(param);
-      #   }
-      #   resolve(function.body);
-      #   endScope();
+    def resolve_function(function, type)
+      _enclosing_function = @current_function
+      @current_function = type
+      begin_scope
+      function.params.each do |param|
+        declare(param)
+        define(param)
+      end
+      resolve(function.body)
+      end_scope
+      @current_function = _enclosing_function
     end
 
-    # private void resolveFunction(
-    #       Stmt.Function function, FunctionType type) {
-    #     FunctionType enclosingFunction = currentFunction;
-    #     currentFunction = type;
-    #
-    #     beginScope();
-    # lox/Resolver.java, method resolveFunction(), replace 1 line
-
-# endScope();
-#     currentFunction = enclosingFunction;
-#   }
-# lox/Resolver.java, in resolveFunction()
-
-
-
     def resolve_local(expr, name)
-      # for (int i = scopes.size() - 1; i >= 0; i--) {
-      #   if (scopes.get(i).containsKey(name.lexeme)) {
-      #     interpreter.resolve(expr, scopes.size() - 1 - i);
-      #     return;
-      #   }
-      # }
-      #
-      # // Not found. Assume it is global.
+      _size = @scope.size
+      (_size - 1).downto(0).to_a.each do |i|
+        if @scopes[i].has_key?(name.lexeme)
+          @interpreter.resolve(expr, @scopes.size - 1 - i)
+          return nil
+        end
+      end
     end
 
     def begin_scope
-      # new HashMap<String, Boolean>()?
       @scopes << {}
     end
 
@@ -187,27 +154,16 @@ module Stark
 
     def declare(name)
       return nil if @scopes.first.nil?
-      scope = @scopes.peek
-      scope << {}
-      # Map<String, Boolean> [] = scopes.peek();
-      # scope.put(name.lexeme, false);
+      _scope = @scopes.first
+      if _scope.has_key?(name.lexeme)
+        puts "<#{name}> Variable with this name already declared in this scope."
+      end
+      _scope[name.lexeme] = false
     end
-
-    # Map<String, Boolean> scope = scopes.peek();
-    #     if (scope.containsKey(name.lexeme)) {
-    #       Lox.error(name,
-    #           "Variable with this name already declared in this scope.");
-    #     }
-    #
-    #     scope.put(name.lexeme, false);
-    # lox/Resolver.java, in declare()
-
-
-
 
     def define(name)
       return nil if @scopes.first.nil?
-      # scopes.peek().put(name.lexeme, true);
+      @scopes.first[name.lexeme] = true
     end
 
     def resolve(statements)
